@@ -146,7 +146,7 @@ def main():
                 pad_token_id=tokenizer.eos_token_id,
             )[0]
         output = tokenizer.decode(
-            outputs[tokenized_input.size(1) :], skip_special_tokens=True
+            outputs[tokenized_input.size(1):], skip_special_tokens=True
         )
         results.append(
             {"task_id": data["task_id"], "input": input_text, "output": output}
