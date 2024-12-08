@@ -8,7 +8,10 @@
 module load gcc/8.3.1
 module load python/3.10.13
 source venv/bin/activate
-source import-env.sh .env
+source script/import-env.sh .env
+
+# create cache directory
+mkdir -p $HF_HOME $HF_DATASETS_CACHE
 
 # create log directory
 LOG_DIR="log/$(date '+%Y-%m-%d/%H-%M-%S')"

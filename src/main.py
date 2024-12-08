@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from datetime import datetime
 
 import bitsandbytes as bnb
 import torch
@@ -9,17 +10,17 @@ from datasets import load_dataset
 from peft import LoraConfig, get_peft_model
 from tqdm import tqdm
 from transformers import (
-    AutoModelForCausalLM, 
+    AutoModelForCausalLM,
     AutoTokenizer,
-    BitsAndBytesConfig, 
-    TrainingArguments
+    BitsAndBytesConfig,
+    TrainingArguments,
 )
 from trl import SFTTrainer
 
 wandb.init(
-    project="llm-2024-competition", 
-    entity="hiroto-weblab", 
-    name=datetime.now().strftime("%Y-%m-%d/%H-%M-%S")
+    project="llm-2024-competition",
+    entity="hiroto-weblab",
+    name=datetime.now().strftime("%Y-%m-%d/%H-%M-%S"),
 )
 
 
@@ -42,7 +43,7 @@ def formatting_prompts_func(examples, tokenizer, prompt, eos_token):
 
 def main():
     HF_TOKEN = os.getenv("HF_TOKEN")
-    base_model_id = "models/models--llm-jp--llm-jp-3-13b/snapshots/cd3823f4c1fcbb0ad2e2af46036ab1b0ca13192a"
+    base_model_id = "llm-jp/llm-jp-3-13b"
     new_model_id = "llm-jp-3-13b-finetune"
 
     bnb_config = BitsAndBytesConfig(
@@ -68,7 +69,9 @@ def main():
     )
     model = get_peft_model(model, peft_config)
 
-    dataset = load_dataset("json", data_files="./ichikara-instruction-003-001-1.json")
+    dataset = load_dataset(
+        "json", data_files="data/ichikara-instruction-003-001-1.json"
+    )
     prompt = "### 指示\n" "{}\n" "### 回答\n" "{}"
     EOS_TOKEN = tokenizer.eos_token
 
@@ -116,7 +119,7 @@ def main():
     trainer.train()
 
     datasets = []
-    with open("./elyza-tasks-100-TV_0.jsonl", "r") as f:
+    with open("tasks/elyza-tasks-100-TV_0.jsonl", "r") as f:
         item = ""
         for line in f:
             line = line.strip()
@@ -150,6 +153,8 @@ def main():
         )
 
     jsonl_id = re.sub(".*/", "", new_model_id)
+    output_dir = datetime.now().strftime("%Y-%m-%d/%H-%M-%S")
+    os.makedirs(output_dir, exist_ok=True)
     with open(f"./{jsonl_id}-outputs.jsonl", "w", encoding="utf-8") as f:
         for result in results:
             json.dump(result, f, ensure_ascii=False)

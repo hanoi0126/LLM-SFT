@@ -1,3 +1,9 @@
+data/
 .env
+llm-jp-3-13b-finetune
 log/
+output/
+tasks/
 venv/
+wandb/
+*.out
