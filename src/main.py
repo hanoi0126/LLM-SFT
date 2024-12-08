@@ -153,9 +153,9 @@ def main():
         )
 
     jsonl_id = re.sub(".*/", "", new_model_id)
-    output_dir = datetime.now().strftime("%Y-%m-%d/%H-%M-%S")
+    output_dir = f"{output}/{datetime.now().strftime('%Y-%m-%d/%H-%M-%S')}"
     os.makedirs(output_dir, exist_ok=True)
-    with open(f"./{jsonl_id}-outputs.jsonl", "w", encoding="utf-8") as f:
+    with open(f"{output_dir}/{jsonl_id}-outputs.jsonl", "w", encoding="utf-8") as f:
         for result in results:
             json.dump(result, f, ensure_ascii=False)
             f.write("\n")
